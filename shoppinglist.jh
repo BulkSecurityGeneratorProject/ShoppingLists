@@ -1,0 +1,70 @@
+/** Our root Entity to manage a list **/
+entity ShoppingList {
+	owner User,
+    recommendationApp Application,
+    shopApp Application,
+    listItems Items,
+    creationDate Instant
+}
+
+/** Applications are the Shops and Sites we connect. **/
+entity Application {
+	name String,
+    type AppType
+}
+
+/** a user representation in our world */
+entity User {
+	uuid String required,
+	email String,
+	fullname String,
+    language Language
+}
+
+entity Item {
+	title String,
+	quantity Double,
+	unit Unit
+}
+
+enum Unit {
+	COUNT, LITER, MILLILITER, GRAM, KILOGRAM
+}
+enum AppType {
+	SHOP, RECOMMENDATION
+}
+enum Language {
+    FRENCH, ENGLISH, SPANISH, GERMAN
+}
+
+relationship OneToMany {
+	/**
+    * The items on a shopping list
+    */
+	Item{list} to ShoppingList,
+	/**
+    * Who is the owner of this list?
+    */
+	ShoppingList{owner} to User
+}
+relationship ManyToMany {
+	/**
+    * The source of a shopping list
+    */
+    ShoppingList{recommendationApp} to Application,
+    /**
+    * The Shop system, where we order the list.
+    */
+    ShoppingList{shopApp} to Application
+}
+
+
+// Set pagination options
+paginate ShoppingList, Item, User, Application with infinite-scroll
+
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl except User
+// Set an angular suffix
+angularSuffix * with shoppig
